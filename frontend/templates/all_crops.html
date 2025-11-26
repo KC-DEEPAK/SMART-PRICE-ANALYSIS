@@ -1,0 +1,152 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="text-center mb-12">
+    <h1 class="text-5xl font-bold text-green-600 mb-4">🌾 All Crops Analysis</h1>
+    <p class="text-xl text-gray-600 mb-8">Complete analysis of all {{ all_crops|length }} crops from your CSV data</p>
+</div>
+
+<!-- Stats Summary -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
+    <div class="bg-white p-6 rounded-lg shadow-md text-center">
+        <div class="text-3xl font-bold text-blue-600">{{ data.total_records }}</div>
+        <div class="text-gray-600 mt-2">📊 Total Records</div>
+    </div>
+    <div class="bg-white p-6 rounded-lg shadow-md text-center">
+        <div class="text-3xl font-bold text-green-600">{{ data.states }}</div>
+        <div class="text-gray-600 mt-2">🗺️ States</div>
+    </div>
+    <div class="bg-white p-6 rounded-lg shadow-md text-center">
+        <div class="text-3xl font-bold text-orange-600">{{ all_crops|length }}</div>
+        <div class="text-gray-600 mt-2">🌱 Total Crops</div>
+    </div>
+    <div class="bg-white p-6 rounded-lg shadow-md text-center">
+        <div class="text-3xl font-bold text-purple-600">{{ data.markets }}</div>
+        <div class="text-gray-600 mt-2">🏪 Markets</div>
+    </div>
+</div>
+
+<!-- All Crops Table -->
+<div class="bg-white rounded-lg shadow-md p-6 mb-12">
+    <h2 class="text-3xl font-bold mb-6 text-gray-800">📋 Complete Crop Analysis</h2>
+    
+    <!-- Search and Filter -->
+    <div class="mb-6">
+        <input type="text" id="searchInput" placeholder="🔍 Search crops..." class="w-full p-3 border border-gray-300 rounded-lg">
+    </div>
+    
+    <div class="overflow-x-auto">
+        <table class="w-full" id="cropsTable">
+            <thead class="bg-gray-100">
+                <tr>
+                    <th class="p-4 text-left cursor-pointer" onclick="sortTable(0)">Crop Name ▲▼</th>
+                    <th class="p-4 text-left cursor-pointer" onclick="sortTable(1)">Profit Score ▲▼</th>
+                    <th class="p-4 text-left cursor-pointer" onclick="sortTable(2)">Price Range ▲▼</th>
+                    <th class="p-4 text-left cursor-pointer" onclick="sortTable(3)">Avg Price ▲▼</th>
+                    <th class="p-4 text-left cursor-pointer" onclick="sortTable(4)">Data Points ▲▼</th>
+                    <th class="p-4 text-left cursor-pointer" onclick="sortTable(5)">Best Selling Months</th>
+                    <th class="p-4 text-left cursor-pointer" onclick="sortTable(6)">Volatility ▲▼</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for crop in all_crops %}
+                <tr class="border-b hover:bg-green-50">
+                    <td class="p-4 font-semibold">{{ crop.name }}</td>
+                    <td class="p-4">
+                        <div class="flex items-center">
+                            <div class="w-24 bg-gray-200 rounded-full h-3">
+                                <div class="bg-green-600 h-3 rounded-full" style="width: {{ crop.profit_score }}%"></div>
+                            </div>
+                            <span class="ml-3 font-medium">{{ crop.profit_score }}%</span>
+                        </div>
+                    </td>
+                    <td class="p-4 text-green-600 font-bold">{{ crop.price_range }}</td>
+                    <td class="p-4">₹{{ "%.0f"|format(crop.avg_price) }}</td>
+                    <td class="p-4 text-center">{{ crop.data_points }}</td>
+                    <td class="p-4">
+                        <div class="flex flex-wrap gap-1">
+                            {% for month in crop.best_months %}
+                            <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs font-medium">
+                                {{ month }}
+                            </span>
+                            {% endfor %}
+                        </div>
+                    </td>
+                    <td class="p-4">
+                        {% if crop.price_volatility == 'High' %}
+                        <span class="px-3 py-1 bg-red-100 text-red-800 rounded-full text-sm font-medium">
+                            📈 High
+                        </span>
+                        {% elif crop.price_volatility == 'Medium' %}
+                        <span class="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-sm font-medium">
+                            ⚖️ Medium
+                        </span>
+                        {% else %}
+                        <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium">
+                            📊 Low
+                        </span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <!-- Summary -->
+    <div class="mt-6 p-4 bg-gray-50 rounded-lg">
+        <h3 class="text-lg font-semibold mb-2">📈 Analysis Summary</h3>
+        <p><strong>High-Value Crops:</strong> Black pepper, Ghee, Arecanut (₹40,000+ average price)</p>
+        <p><strong>Seasonal Opportunities:</strong> Summer spices, Winter dairy, Year-round plantation crops</p>
+        <p><strong>Stable Crops:</strong> Low volatility crops suitable for consistent income</p>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Search functionality
+document.getElementById('searchInput').addEventListener('input', function(e) {
+    const searchTerm = e.target.value.toLowerCase();
+    const rows = document.querySelectorAll('#cropsTable tbody tr');
+    
+    rows.forEach(row => {
+        const cropName = row.cells[0].textContent.toLowerCase();
+        if (cropName.includes(searchTerm)) {
+            row.style.display = '';
+        } else {
+            row.style.display = 'none';
+        }
+    });
+});
+
+// Sorting functionality
+let sortDirection = 1;
+function sortTable(columnIndex) {
+    const table = document.getElementById('cropsTable');
+    const tbody = table.querySelector('tbody');
+    const rows = Array.from(tbody.querySelectorAll('tr'));
+    
+    rows.sort((a, b) => {
+        let aValue = a.cells[columnIndex].textContent;
+        let bValue = b.cells[columnIndex].textContent;
+        
+        // Handle numeric values
+        if (columnIndex === 1 || columnIndex === 3 || columnIndex === 4) {
+            aValue = parseFloat(aValue) || 0;
+            bValue = parseFloat(bValue) || 0;
+        }
+        
+        if (aValue < bValue) return -1 * sortDirection;
+        if (aValue > bValue) return 1 * sortDirection;
+        return 0;
+    });
+    
+    // Toggle sort direction
+    sortDirection *= -1;
+    
+    // Reorder rows
+    rows.forEach(row => tbody.appendChild(row));
+}
+</script>
+{% endblock %}

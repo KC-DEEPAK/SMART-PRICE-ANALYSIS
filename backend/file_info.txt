@@ -1,0 +1,18 @@
+CSV FILE INFORMATION
+==================================================
+File Name: full_daily_prices.csv
+Location: C:\Users\Deepak K C\Desktop\best_time_to_sell_crop\backend\data\full_daily_prices.csv
+Rows: 4783, Columns: 10
+Columns: ['State', 'District', 'Market', 'Commodity', 'Variety', 'Grade', 'Arrival_Date', 'Min_x0020_Price', 'Max_x0020_Price', 'Modal_x0020_Price']
+Data Types:
+  - State: object
+  - District: object
+  - Market: object
+  - Commodity: object
+  - Variety: object
+  - Grade: object
+  - Arrival_Date: object
+  - Min_x0020_Price: int64
+  - Max_x0020_Price: float64
+  - Modal_x0020_Price: float64
+==================================================
