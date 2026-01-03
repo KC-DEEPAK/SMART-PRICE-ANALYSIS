@@ -1,0 +1,45 @@
+.dashboard-wrapper {
+  padding: 30px;
+}
+
+.dashboard-title {
+  font-size: 22px;
+  margin-bottom: 20px;
+  font-weight: bold;
+}
+
+.card-container {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.card {
+  min-width: 240px;
+  padding: 20px;
+  border-radius: 14px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+
+.green {
+  background: #e8f5e9;
+  border-left: 6px solid #2e7d32;
+}
+
+.orange {
+  background: #fff3e0;
+  border-left: 6px solid #ef6c00;
+}
+
+.blue {
+  background: #e3f2fd;
+  border-left: 6px solid #1565c0;
+}
+.clickable {
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.clickable:hover {
+  transform: translateY(-6px);
+}
