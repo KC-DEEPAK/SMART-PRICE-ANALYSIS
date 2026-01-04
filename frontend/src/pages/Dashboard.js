@@ -1,33 +1,59 @@
 import { useEffect, useState } from "react";
 import DashboardCards from "../components/DashboardCards";
 import CategoryList from "../components/CategoryList";
+import TopBestCrops from "../components/TopBestCrops";
+import ProductGroups from "../components/ProductGroups";
 
 function Dashboard() {
   const [data, setData] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [selectedCrop, setSelectedCrop] = useState(null);
 
   useEffect(() => {
     fetch("http://127.0.0.1:5000/api/data")
       .then(res => res.json())
-      .then(json => {
-        console.log("✅ Backend data loaded:", json.length);
-        setData(json);
-      });
+      .then(json => setData(json));
   }, []);
-
-  console.log("👉 Selected category:", selectedCategory);
 
   return (
     <>
-      <DashboardCards
-        data={data}
-        onCategoryClick={setSelectedCategory}
+      {/* CATEGORY SUMMARY CARDS */}
+      <DashboardCards data={data} />
+
+      {/* TOP 5 BEST CROPS */}
+      <TopBestCrops data={data} />
+
+      {/* PRODUCT GROUPS (Grains, Pulses, etc.) */}
+      <ProductGroups
+        crops={[
+          ...new Set(
+            data.map(
+              d =>
+                d.Commodity ||
+                d.commodity ||
+                d.Crop ||
+                d.crop_name
+            )
+          )
+        ]}
+        onCropSelect={crop => setSelectedCrop(crop)}
       />
 
-      {selectedCategory && (
+      {/* MARKET PRICES FOR SELECTED CROP */}
+      {selectedCrop && (
         <CategoryList
-          data={data}
-          category={selectedCategory}
+          data={data.filter(d => {
+            const name =
+              d.Commodity ||
+              d.commodity ||
+              d.Crop ||
+              d.crop_name;
+
+            return (
+              name &&
+              name.toLowerCase().includes(selectedCrop.toLowerCase())
+            );
+          })}
+          category={selectedCrop}
         />
       )}
     </>

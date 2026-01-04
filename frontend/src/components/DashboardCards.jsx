@@ -1,52 +1,96 @@
 import "./DashboardCards.css";
-import { getCategory } from "../utils/cropCategories";
 
 function DashboardCards({ data = [], onCategoryClick }) {
-
-  const categories = {
-    Vegetables: [],
-    Fruits: [],
-    Others: []
-  };
+  let vegetables = 0;
+  let fruits = 0;
+  let others = 0;
 
   data.forEach(item => {
-    const cropName =
+    const crop =
       item.Commodity ||
       item.commodity ||
       item.Crop ||
-      item.crop_name;
+      item.crop_name ||
+      "";
 
-    const category = getCategory(cropName);
-    categories[category].push(item);
+    const name = crop.toLowerCase();
+
+    // 🥦 VEGETABLE KEYWORDS
+    if (
+      name.includes("tomato") ||
+      name.includes("onion") ||
+      name.includes("chilli") ||
+      name.includes("brinjal") ||
+      name.includes("potato") ||
+      name.includes("gourd") ||
+      name.includes("beans") ||
+      name.includes("cabbage") ||
+      name.includes("cauliflower") ||
+      name.includes("okra") ||
+      name.includes("ladies finger") ||
+      name.includes("vegetable")
+    ) {
+      vegetables++;
+    }
+
+    // 🍎 FRUIT KEYWORDS
+    else if (
+      name.includes("apple") ||
+      name.includes("banana") ||
+      name.includes("mango") ||
+      name.includes("orange") ||
+      name.includes("papaya") ||
+      name.includes("grapes") ||
+      name.includes("guava") ||
+      name.includes("pineapple") ||
+      name.includes("water melon") ||
+      name.includes("melon")
+    ) {
+      fruits++;
+    }
+
+    // 🌾 EVERYTHING ELSE
+    else {
+      others++;
+    }
   });
+
+  const handleClick = category => {
+    if (typeof onCategoryClick === "function") {
+      onCategoryClick(category);
+    }
+  };
 
   return (
     <div className="dashboard-wrapper">
-      <h2 className="dashboard-title">🌾 Crop Categories</h2>
+      <h2 className="dashboard-title">🌾 Crop Dashboard</h2>
 
       <div className="card-container">
         <div
-          className="card green clickable"
-          onClick={() => onCategoryClick("Vegetables")}
+          className="card green"
+          onClick={() => handleClick("Vegetables")}
         >
           <h3>🥦 Vegetables</h3>
-          <h1>{categories.Vegetables.length}</h1>
+          <h1>{vegetables}</h1>
+          <p>Crops</p>
         </div>
 
         <div
-          className="card orange clickable"
-          onClick={() => onCategoryClick("Fruits")}
+          className="card orange"
+          onClick={() => handleClick("Fruits")}
         >
           <h3>🍎 Fruits</h3>
-          <h1>{categories.Fruits.length}</h1>
+          <h1>{fruits}</h1>
+          <p>Crops</p>
         </div>
 
         <div
-          className="card blue clickable"
-          onClick={() => onCategoryClick("Others")}
+          className="card blue"
+          onClick={() => handleClick("Others")}
         >
           <h3>🌾 Others</h3>
-          <h1>{categories.Others.length}</h1>
+          <h1>{others}</h1>
+          <p>Crops</p>
         </div>
       </div>
     </div>
