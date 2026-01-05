@@ -1,17 +1,31 @@
-function Navbar({ setPage }) {
+import { Link } from "react-router-dom";
+import "./Navbar.css";
+
+function Navbar() {
   return (
-    <div className="navbar">
-      <div>
-        <h2>📊 Smart Price Analysis in Agriculture</h2>
-        <p>Welcome, Deepak KC</p>
+    <nav className="navbar">
+      <div className="navbar-left">
+        🌾 <span className="logo-text">Smart Crop Price</span>
       </div>
 
-      <div className="nav-buttons">
-        <button onClick={() => setPage("dashboard")}>Dashboard</button>
-        <button onClick={() => setPage("price")}>Price List</button>
-        <button onClick={() => setPage("compare")}>Comparison</button>
+      <div className="navbar-right">
+        <Link to="/" className="nav-link">
+          Dashboard
+        </Link>
+
+        <Link to="/price-list" className="nav-link">
+          Price List
+        </Link>
+
+        <Link to="/comparison" className="nav-link">
+          Comparison
+        </Link>
+
+        <Link to="/login" className="nav-link login-btn">
+          🔐 Login
+        </Link>
       </div>
-    </div>
+    </nav>
   );
 }
 
