@@ -1,15 +1,17 @@
 import { useState } from "react";
 import "./AccountPage.css";
+import PriceAlertSettings from "../components/PriceAlertSettings";
 
 function AccountPage() {
+  // 👤 USER DATA
   const storedUser = JSON.parse(localStorage.getItem("user")) || {};
+  const [user] = useState(storedUser);
 
-  const [user, setUser] = useState(storedUser);
+  // 📸 PROFILE PHOTO
   const [photo, setPhoto] = useState(
     localStorage.getItem("profilePhoto")
   );
 
-  // 📸 Handle photo upload
   const handlePhotoUpload = e => {
     const file = e.target.files[0];
     if (!file) return;
@@ -22,17 +24,30 @@ function AccountPage() {
     reader.readAsDataURL(file);
   };
 
+  // 🚪 LOGOUT
   const handleLogout = () => {
     localStorage.removeItem("user");
     window.location.href = "/login";
   };
+
+  // 🌾 SAFELY GET CROPS FOR ALERT SETTINGS
+  const crops = (() => {
+    try {
+      const saved = JSON.parse(localStorage.getItem("allCrops"));
+      return Array.isArray(saved)
+        ? [...new Set(saved)].filter(Boolean)
+        : [];
+    } catch {
+      return [];
+    }
+  })();
 
   return (
     <div className="account-page">
       <div className="account-card">
         <h2>👤 My Account</h2>
 
-        {/* PROFILE PHOTO */}
+        {/* 📸 PROFILE PHOTO */}
         <div className="profile-section">
           <img
             src={
@@ -54,13 +69,16 @@ function AccountPage() {
           </label>
         </div>
 
-        {/* USER INFO */}
+        {/* ℹ️ USER INFO */}
         <div className="info">
-          <p><b>Name:</b> {user.name}</p>
-          <p><b>Phone:</b> {user.phone}</p>
-          <p><b>Email:</b> {user.email}</p>
-          <p><b>Place:</b> {user.place}</p>
+          <p><b>Name:</b> {user.name || "-"}</p>
+          <p><b>Phone:</b> {user.phone || "-"}</p>
+          <p><b>Email:</b> {user.email || "-"}</p>
+          <p><b>Place:</b> {user.place || "-"}</p>
         </div>
+
+        {/* 🔔 PRICE ALERT SETTINGS */}
+        <PriceAlertSettings crops={crops} />
 
         <button className="logout-btn" onClick={handleLogout}>
           🚪 Logout

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import "./LoginPage.css";
 import { useNavigate } from "react-router-dom";
 
 function LoginPage() {
@@ -13,69 +14,75 @@ function LoginPage() {
   });
 
   const handleChange = e => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    setForm({
+      ...form,
+      [e.target.name]: e.target.value
+    });
   };
 
   const handleSubmit = e => {
     e.preventDefault();
 
-    // ✅ SAVE USER DATA IN BROWSER
+    // ✅ SAVE USER DATA
     localStorage.setItem("user", JSON.stringify(form));
 
-    // ✅ GO TO ACCOUNT PAGE
     navigate("/account");
   };
 
   return (
-    <div style={{ padding: "30px" }}>
-      <h2>🔐 Farmer Login / Register</h2>
+    <div className="login-page">
+      <form className="login-card" onSubmit={handleSubmit}>
+        <h2>👨‍🌾 Farmer Login / Register</h2>
+        <p className="subtitle">
+          Get alerts when crop prices go up 📈 or down 📉
+        </p>
 
-      <form
-        onSubmit={handleSubmit}
-        style={{ maxWidth: "400px", marginTop: "20px" }}
-      >
         <input
+          type="text"
           name="name"
           placeholder="Full Name"
+          value={form.name}
           onChange={handleChange}
           required
         />
-        <br /><br />
 
         <input
+          type="tel"
           name="phone"
           placeholder="Phone Number"
+          value={form.phone}
           onChange={handleChange}
           required
         />
-        <br /><br />
 
         <input
+          type="email"
           name="email"
-          placeholder="Email"
+          placeholder="Email Address"
+          value={form.email}
           onChange={handleChange}
           required
         />
-        <br /><br />
 
         <input
-          name="password"
           type="password"
+          name="password"
           placeholder="Password"
+          value={form.password}
           onChange={handleChange}
           required
         />
-        <br /><br />
 
         <input
+          type="text"
           name="place"
           placeholder="Village / Market Place"
+          value={form.place}
           onChange={handleChange}
           required
         />
-        <br /><br />
 
-        <button type="submit">Login</button>
+        <button type="submit">🔐 Login</button>
       </form>
     </div>
   );
