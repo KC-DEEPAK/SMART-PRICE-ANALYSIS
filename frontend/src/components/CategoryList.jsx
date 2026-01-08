@@ -1,46 +1,76 @@
 import { useState } from "react";
 import { getCategory } from "../utils/cropCategories";
-import { checkPriceAlert } from "../utils/checkPriceAlert";
 
 function CategoryList({ data = [], category }) {
   const [selectedCrop, setSelectedCrop] = useState(null);
 
-  // filter by category
+  // 🛑 SAFETY CHECK
+  if (!Array.isArray(data) || !category) {
+    return null;
+  }
+
+  // ✅ FILTER BY CATEGORY
   const filteredData = data.filter(item => {
     const crop =
-      item.Commodity ||
-      item.commodity ||
-      item.Crop ||
-      item.crop_name;
+      item?.Commodity ||
+      item?.commodity ||
+      item?.Crop ||
+      item?.crop_name;
 
-    return getCategory(crop) === category;
+    return crop && getCategory(crop) === category;
   });
 
-  // group by crop
+  // 🛑 If nothing found
+  if (!filteredData.length) {
+    return (
+      <div style={{ padding: "20px" }}>
+        <h3>No data found for {category}</h3>
+      </div>
+    );
+  }
+
+  // ✅ GROUP BY CROP NAME
   const cropMap = {};
   filteredData.forEach(item => {
     const crop =
-      item.Commodity ||
-      item.commodity ||
-      item.Crop ||
-      item.crop_name;
+      item?.Commodity ||
+      item?.commodity ||
+      item?.Crop ||
+      item?.crop_name;
 
-    if (!cropMap[crop]) cropMap[crop] = [];
+    if (!crop) return;
+
+    if (!cropMap[crop]) {
+      cropMap[crop] = [];
+    }
     cropMap[crop].push(item);
   });
+
+  const cropNames = Object.keys(cropMap);
 
   return (
     <div style={{ padding: "20px" }}>
       <h2>{category} Crops</h2>
 
-      <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
-        {Object.keys(cropMap).map(crop => (
+      {/* 🌾 CROP BUTTONS */}
+      <div
+        style={{
+          display: "flex",
+          gap: "10px",
+          flexWrap: "wrap",
+          marginBottom: "20px"
+        }}
+      >
+        {cropNames.map(crop => (
           <button
             key={crop}
             onClick={() => setSelectedCrop(crop)}
             style={{
-              padding: "10px",
+              padding: "10px 16px",
               borderRadius: "20px",
+              border: "1px solid #aaa",
+              background:
+                selectedCrop === crop ? "#c8e6c9" : "#f5f5f5",
               cursor: "pointer"
             }}
           >
@@ -49,32 +79,28 @@ function CategoryList({ data = [], category }) {
         ))}
       </div>
 
-      {selectedCrop && (
-        <table
-          border="1"
-          width="100%"
-          cellPadding="8"
-          style={{ marginTop: "20px" }}
-        >
-          <thead>
-            <tr>
-              <th>Market</th>
-              <th>District</th>
-              <th>State</th>
-              <th>Min ₹</th>
-              <th>Modal ₹</th>
-              <th>Max ₹</th>
-            </tr>
-          </thead>
+      {/* 📋 MARKET TABLE */}
+      {selectedCrop &&
+        Array.isArray(cropMap[selectedCrop]) && (
+          <table
+            border="1"
+            width="100%"
+            cellPadding="8"
+            style={{ borderCollapse: "collapse" }}
+          >
+            <thead style={{ background: "#f1f8e9" }}>
+              <tr>
+                <th>Market</th>
+                <th>District</th>
+                <th>State</th>
+                <th>Min ₹</th>
+                <th>Modal ₹</th>
+                <th>Max ₹</th>
+              </tr>
+            </thead>
 
-          <tbody>
-            {cropMap[selectedCrop].map((item, i) => {
-              const price = Number(item.Modal_x0020_Price);
-
-              // 🔔 CHECK PRICE ALERT HERE
-              checkPriceAlert(selectedCrop, price);
-
-              return (
+            <tbody>
+              {cropMap[selectedCrop].map((item, i) => (
                 <tr key={i}>
                   <td>{item.Market}</td>
                   <td>{item.District}</td>
@@ -83,11 +109,10 @@ function CategoryList({ data = [], category }) {
                   <td>{item.Modal_x0020_Price}</td>
                   <td>{item.Max_x0020_Price}</td>
                 </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      )}
+              ))}
+            </tbody>
+          </table>
+        )}
     </div>
   );
 }

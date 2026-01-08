@@ -1,29 +1,42 @@
-export const OTHER_GROUPS = {
-  Grains: [
-    "Rice", "Wheat", "Maize", "Barley (Jau)", "Ragi (Finger Millet)",
-    "Jowar(Sorghum)", "Bajra(Pearl Millet/Cumbu)"
+// utils/otherGroups.js
+
+export const OTHER_CROP_GROUPS = {
+  "🌾 Grains": [
+    "Rice", "Wheat", "Maize", "Jowar", "Bajra", "Ragi"
   ],
 
-  Pulses: [
-    "Green Gram (Moong)", "Black Gram (Urd)",
-    "Masur Dal", "Moath Dal", "Cowpea",
-    "Kabuli Chana", "Arhar Dal"
+  "🫘 Pulses / Dals": [
+    "Green Gram", "Black Gram", "Bengal Gram", "Arhar", "Masur",
+    "Moath Dal", "Cowpea"
   ],
 
-  Spices: [
-    "Turmeric", "Ginger", "Garlic", "Chilli Red",
-    "Coriander seed", "Cumin Seed(Jeera)",
-    "Pepper ungarbled"
+  "🫒 Oil Seeds": [
+    "Groundnut", "Mustard", "Castor", "Sesamum", "Soyabean"
   ],
 
-  Plantation: [
-    "Coconut", "Arecanut", "Coffee",
-    "Rubber", "Tea", "Sugarcane"
+  "🌿 Spices": [
+    "Turmeric", "Ginger", "Garlic", "Pepper",
+    "Coriander seed", "Cumin", "Methi Seeds"
   ],
 
-  Animal: [
-    "Fish", "Goat", "Hen", "Cock", "Pigs", "Ghee"
+  "🍀 Cash / Plantation Crops": [
+    "Cotton", "Sugarcane", "Coffee", "Rubber",
+    "Coconut", "Arecanut"
   ],
 
-  Misc: [] // fallback
+  "🌸 Flowers": [
+    "Rose", "Jasmine", "Marigold", "Tube Rose"
+  ],
+
+  "🥬 Leafy & Minor Crops": [
+    "Spinach", "Mint", "Coriander(Leaves)", "Methi(Leaves)"
+  ],
+
+  "🍎 Fruits (Raw / Others)": [
+    "Mango", "Custard Apple", "Pear", "Plum"
+  ],
+
+  "🐄 Others": [
+    "Fish", "Milk", "Wood", "Ghee", "Firewood"
+  ]
 };
