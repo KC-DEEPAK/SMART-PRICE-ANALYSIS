@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 import PriceListGraph from "../components/PriceListGraph";
-import { speakPrice } from "../utils/speakPrice";
+import { speakDecision } from "../utils/speakDecision";
 
 function PriceListPage() {
   const [data, setData] = useState([]);
   const [selectedCrop, setSelectedCrop] = useState("");
-  const [lang, setLang] = useState("en");
+
+  const user =
+    JSON.parse(localStorage.getItem("user")) || {};
 
   useEffect(() => {
     fetch("http://127.0.0.1:5000/api/data")
@@ -33,7 +35,7 @@ function PriceListPage() {
       d.commodity ||
       d.Crop ||
       d.crop_name;
-    return selectedCrop ? name === selectedCrop : false;
+    return name === selectedCrop;
   });
 
   const sortedData = [...cropData].sort(
@@ -42,46 +44,18 @@ function PriceListPage() {
       Number(a.Modal_x0020_Price)
   );
 
+  const allPrices = sortedData.map(d =>
+    Number(d.Modal_x0020_Price)
+  );
+
   return (
     <div style={{ padding: "20px" }}>
       <h2>📋 Crop Price List</h2>
 
-      {/* LANGUAGE TOGGLE */}
-      <div style={{ marginBottom: "15px" }}>
-        <button
-          onClick={() => setLang("en")}
-          style={{
-            marginRight: "10px",
-            padding: "6px 12px",
-            background: lang === "en" ? "#c8e6c9" : "#eee",
-            border: "1px solid #aaa",
-            cursor: "pointer"
-          }}
-        >
-          English
-        </button>
-
-        <button
-          onClick={() => setLang("kn")}
-          style={{
-            padding: "6px 12px",
-            background: lang === "kn" ? "#c8e6c9" : "#eee",
-            border: "1px solid #aaa",
-            cursor: "pointer"
-          }}
-        >
-          ಕನ್ನಡ
-        </button>
-      </div>
-
       <select
         value={selectedCrop}
         onChange={e => setSelectedCrop(e.target.value)}
-        style={{
-          padding: "10px",
-          marginBottom: "20px",
-          width: "300px"
-        }}
+        style={{ padding: "10px", width: "300px" }}
       >
         <option value="">🌾 Select Crop</option>
         {crops.map(c => (
@@ -91,65 +65,68 @@ function PriceListPage() {
         ))}
       </select>
 
-      {selectedCrop && <PriceListGraph data={sortedData} />}
-
       {selectedCrop && (
-        <table
-          border="1"
-          width="100%"
-          cellPadding="8"
-          style={{
-            marginTop: "30px",
-            borderCollapse: "collapse"
-          }}
-        >
-          <thead style={{ background: "#f1f8e9" }}>
-            <tr>
-              <th>Market</th>
-              <th>State</th>
-              <th>Modal ₹</th>
-              <th>Voice</th>
-            </tr>
-          </thead>
+        <>
+          <PriceListGraph data={sortedData} />
 
-          <tbody>
-            {sortedData.map((d, i) => (
-              <tr
-                key={i}
-                style={{
-                  background: i === 0 ? "#fff9c4" : "white"
-                }}
-              >
-                <td>
-                  {i === 0 && "⭐ "} {d.Market}
-                </td>
-                <td>{d.State}</td>
-                <td>₹{d.Modal_x0020_Price}</td>
-                <td>
-                  <button
-                    onClick={() =>
-                      speakPrice({
-                        crop: selectedCrop,
-                        market: d.Market,
-                        price: d.Modal_x0020_Price,
-                        state: d.State,
-                        lang
-                      })
-                    }
-                    style={{
-                      border: "none",
-                      background: "transparent",
-                      cursor: "pointer",
-                      fontSize: "18px"
-                    }}
-                  >
-                    🔊
-                  </button>
-                </td>
+          <table
+            border="1"
+            width="100%"
+            cellPadding="8"
+            style={{ marginTop: "20px" }}
+          >
+            <thead style={{ background: "#e8f5e9" }}>
+              <tr>
+                <th>Market</th>
+                <th>State</th>
+                <th>Price</th>
+                <th>Voice</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+
+            <tbody>
+              {sortedData.map((d, i) => (
+                <tr
+                  key={i}
+                  style={{
+                    background:
+                      i === 0 ? "#fff9c4" : "white"
+                  }}
+                >
+                  <td>
+                    {i === 0 && "⭐ "} {d.Market}
+                  </td>
+                  <td>{d.State}</td>
+                  <td>₹{d.Modal_x0020_Price}</td>
+                  <td>
+                    <button
+                      onClick={() =>
+                        speakDecision({
+                          userName: user.name || "Farmer",
+                          crop: selectedCrop,
+                          market: d.Market,
+                          state: d.State,
+                          price: Number(
+                            d.Modal_x0020_Price
+                          ),
+                          allPrices
+                        })
+                      }
+                      style={{
+                        border: "none",
+                        background: "transparent",
+                        cursor: "pointer",
+                        fontSize: "18px"
+                      }}
+                    >
+                      🔊
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </>
       )}
     </div>
   );

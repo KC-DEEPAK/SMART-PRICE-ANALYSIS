@@ -1,15 +1,19 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { getCategory } from "../utils/cropCategories";
+import { getSellDecision } from "../utils/sellDecision";
 
 function CategoryList({ data = [], category }) {
   const [selectedCrop, setSelectedCrop] = useState(null);
 
-  // 🛑 SAFETY CHECK
-  if (!Array.isArray(data) || !category) {
-    return null;
-  }
+  // 🔑 RESET selected crop when category changes
+  useEffect(() => {
+    setSelectedCrop(null);
+  }, [category]);
 
-  // ✅ FILTER BY CATEGORY
+  // 🛑 Safety checks
+  if (!Array.isArray(data) || !category) return null;
+
+  // Filter data by category
   const filteredData = data.filter(item => {
     const crop =
       item?.Commodity ||
@@ -20,7 +24,6 @@ function CategoryList({ data = [], category }) {
     return crop && getCategory(crop) === category;
   });
 
-  // 🛑 If nothing found
   if (!filteredData.length) {
     return (
       <div style={{ padding: "20px" }}>
@@ -29,7 +32,7 @@ function CategoryList({ data = [], category }) {
     );
   }
 
-  // ✅ GROUP BY CROP NAME
+  // Group by crop
   const cropMap = {};
   filteredData.forEach(item => {
     const crop =
@@ -40,9 +43,7 @@ function CategoryList({ data = [], category }) {
 
     if (!crop) return;
 
-    if (!cropMap[crop]) {
-      cropMap[crop] = [];
-    }
+    if (!cropMap[crop]) cropMap[crop] = [];
     cropMap[crop].push(item);
   });
 
@@ -52,7 +53,7 @@ function CategoryList({ data = [], category }) {
     <div style={{ padding: "20px" }}>
       <h2>{category} Crops</h2>
 
-      {/* 🌾 CROP BUTTONS */}
+      {/* 🌾 Crop buttons */}
       <div
         style={{
           display: "flex",
@@ -79,7 +80,7 @@ function CategoryList({ data = [], category }) {
         ))}
       </div>
 
-      {/* 📋 MARKET TABLE */}
+      {/* 📋 Market table */}
       {selectedCrop &&
         Array.isArray(cropMap[selectedCrop]) && (
           <table
@@ -91,25 +92,56 @@ function CategoryList({ data = [], category }) {
             <thead style={{ background: "#f1f8e9" }}>
               <tr>
                 <th>Market</th>
-                <th>District</th>
                 <th>State</th>
-                <th>Min ₹</th>
-                <th>Modal ₹</th>
-                <th>Max ₹</th>
+                <th>Price ₹</th>
+                <th>Advice</th>
               </tr>
             </thead>
 
             <tbody>
-              {cropMap[selectedCrop].map((item, i) => (
-                <tr key={i}>
-                  <td>{item.Market}</td>
-                  <td>{item.District}</td>
-                  <td>{item.State}</td>
-                  <td>{item.Min_x0020_Price}</td>
-                  <td>{item.Modal_x0020_Price}</td>
-                  <td>{item.Max_x0020_Price}</td>
-                </tr>
-              ))}
+              {cropMap[selectedCrop].map((item, i) => {
+                const prices = cropMap[selectedCrop].map(d =>
+                  Number(d.Modal_x0020_Price)
+                );
+
+                const avg =
+                  prices.reduce((a, b) => a + b, 0) /
+                  prices.length;
+
+                const current = Number(
+                  item.Modal_x0020_Price
+                );
+
+                const decision = getSellDecision(
+                  current,
+                  avg
+                );
+
+                return (
+                  <tr key={i}>
+                    <td>{item.Market}</td>
+                    <td>{item.State}</td>
+                    <td>₹{current}</td>
+                    <td>
+                      {decision === "SELL" && (
+                        <span style={{ color: "green" }}>
+                          🟢 SELL NOW
+                        </span>
+                      )}
+                      {decision === "WAIT" && (
+                        <span style={{ color: "red" }}>
+                          🔴 WAIT
+                        </span>
+                      )}
+                      {decision === "HOLD" && (
+                        <span style={{ color: "orange" }}>
+                          🟡 HOLD
+                        </span>
+                      )}
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         )}
