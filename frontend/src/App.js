@@ -7,11 +7,13 @@ import ComparisonPage from "./pages/ComparisonPage";
 import PriceListPage from "./pages/PriceListPage";
 import LoginPage from "./pages/LoginPage";
 import AccountPage from "./pages/AccountPage";
+import FertilizerPage from "./pages/FertilizerPage";
+import DiseaseFertilizerPage from "./pages/DiseaseFertilizerPage";
 
 function App() {
   return (
-    <BrowserRouter>
-      <AuthProvider>
+    <AuthProvider>
+      <BrowserRouter>
         <Navbar />
 
         <Routes>
@@ -20,10 +22,14 @@ function App() {
           <Route path="/comparison" element={<ComparisonPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/account" element={<AccountPage />} />
+          <Route path="/fertilizer" element={<FertilizerPage />} />
+          <Route
+            path="/disease-guide"
+            element={<DiseaseFertilizerPage />}
+          />
         </Routes>
-
-      </AuthProvider>
-    </BrowserRouter>
+      </BrowserRouter>
+    </AuthProvider>
   );
 }
 

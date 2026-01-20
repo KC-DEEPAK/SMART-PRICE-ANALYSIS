@@ -4,8 +4,13 @@ import "./Navbar.css";
 function Navbar() {
   const navigate = useNavigate();
 
-  // ✅ check login status
-  const user = JSON.parse(localStorage.getItem("user"));
+  // ✅ SAFE CHECK LOGIN STATUS
+  let user = null;
+  try {
+    user = JSON.parse(localStorage.getItem("user"));
+  } catch (e) {
+    user = null;
+  }
 
   const handleLogout = () => {
     localStorage.removeItem("user");
@@ -14,10 +19,12 @@ function Navbar() {
 
   return (
     <nav className="navbar">
+      {/* LEFT */}
       <div className="navbar-left">
         🌾 <span className="logo-text">Smart Crop Price</span>
       </div>
 
+      {/* RIGHT */}
       <div className="navbar-right">
         <Link to="/" className="nav-link">
           Dashboard
@@ -31,7 +38,12 @@ function Navbar() {
           Comparison
         </Link>
 
-        {/* ✅ CONDITIONAL RENDER */}
+        {/* 🌱 Fertilizer / Disease */}
+        <Link to="/fertilizer" className="nav-link">
+          🌱 Fertilizer
+        </Link>
+
+        {/* LOGIN / ACCOUNT */}
         {!user ? (
           <Link to="/login" className="nav-link login-btn">
             🔐 Login
@@ -45,6 +57,7 @@ function Navbar() {
             <button
               onClick={handleLogout}
               className="nav-link logout-btn"
+              style={{ background: "none", border: "none" }}
             >
               🚪 Logout
             </button>
