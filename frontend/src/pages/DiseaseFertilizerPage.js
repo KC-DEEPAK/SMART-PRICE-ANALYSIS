@@ -1,90 +1,53 @@
 import { useState } from "react";
-import diseaseData from "../utils/diseaseData";
-import { speakDisease } from "../utils/speakDisease";
+import diseaseFertilizerData from "../data/diseaseFertilizerData";
+import { speakText } from "../utils/speakText";
+import "./DiseaseFertilizerPage.css";
 
 function DiseaseFertilizerPage() {
-  const [crop, setCrop] = useState("");
-  const [symptom, setSymptom] = useState("");
+  const crops = Object.keys(diseaseFertilizerData);
+  const [selectedCrop, setSelectedCrop] = useState(crops[0]);
 
-  const crops = Object.keys(diseaseData);
-  const symptoms = crop ? Object.keys(diseaseData[crop]) : [];
+  const diseases = diseaseFertilizerData[selectedCrop] || [];
 
-  const result =
-    crop && symptom ? diseaseData[crop][symptom] : null;
+  const handleSpeak = (disease) => {
+    const message =
+      `For ${selectedCrop}. ` +
+      `Disease is ${disease.disease}. ` +
+      `Symptoms are ${disease.symptoms}. ` +
+      `Prevention is ${disease.prevention}. ` +
+      `Recommended treatment is ${disease.recommended}.`;
+
+    speakText(message);
+  };
 
   return (
-    <div style={{ padding: "30px" }}>
-      <h2>🌱 Disease + Fertilizer Recommendation</h2>
+    <div className="disease-page">
+      <h2>🦠 Disease & Fertilizer Recommendation</h2>
 
-      {/* CROP SELECT */}
       <select
-        value={crop}
-        onChange={e => {
-          setCrop(e.target.value);
-          setSymptom("");
-        }}
-        style={{ padding: "10px", width: "300px", marginBottom: "15px" }}
+        value={selectedCrop}
+        onChange={(e) => setSelectedCrop(e.target.value)}
       >
-        <option value="">🌾 Select Crop</option>
-        {crops.map(c => (
-          <option key={c} value={c}>{c}</option>
+        {crops.map((crop) => (
+          <option key={crop} value={crop}>
+            {crop}
+          </option>
         ))}
       </select>
 
-      <br />
+      {diseases.map((d, index) => (
+        <div key={index} className="disease-card">
+          <h3>{d.disease}</h3>
 
-      {/* SYMPTOM SELECT */}
-      {crop && (
-        <select
-          value={symptom}
-          onChange={e => setSymptom(e.target.value)}
-          style={{ padding: "10px", width: "300px", marginBottom: "20px" }}
-        >
-          <option value="">🦠 Select Symptom</option>
-          {symptoms.map(s => (
-            <option key={s} value={s}>{s}</option>
-          ))}
-        </select>
-      )}
+          <p><b>Symptoms:</b> {d.symptoms}</p>
+          <p><b>Prevention:</b> {d.prevention}</p>
+          <p><b>Recommended:</b> {d.recommended}</p>
 
-      {/* RESULT */}
-      {result && (
-        <div
-          style={{
-            background: "#e8f5e9",
-            padding: "20px",
-            borderRadius: "10px",
-            maxWidth: "500px"
-          }}
-        >
-          <p><b>🦠 Problem:</b> {result.problem}</p>
-          <p><b>💊 Fertilizer:</b> {result.fertilizer}</p>
-          <p><b>🌱 Stage:</b> {result.stage}</p>
-          <p><b>📈 Benefit:</b> {result.benefit}</p>
-
-          <button
-            onClick={() =>
-              speakDisease({
-                crop,
-                problem: result.problem,
-                fertilizer: result.fertilizer,
-                stage: result.stage
-              })
-            }
-            style={{
-              marginTop: "10px",
-              padding: "10px 15px",
-              background: "#2e7d32",
-              color: "white",
-              border: "none",
-              borderRadius: "6px",
-              cursor: "pointer"
-            }}
-          >
-            🔊 Hear Advice
+          <button onClick={() => handleSpeak(d)}>
+            🔊 Speak Guidance
           </button>
         </div>
-      )}
+      ))}
     </div>
   );
 }

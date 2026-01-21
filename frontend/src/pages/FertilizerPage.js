@@ -1,27 +1,28 @@
 import { useState } from "react";
-import fertilizerData from "../utils/fertilizerData";
-import { speakFertilizer } from "../utils/speakFertilizer";
+import fertilizerData from "../data/fertilizerData";
+import diseaseFertilizerData from "../data/diseaseFertilizerData";
+import { speakText } from "../utils/speakText";
+import "./FertilizerPage.css";
 
 function FertilizerPage() {
   const [selectedCrop, setSelectedCrop] = useState("");
 
   const crops = Object.keys(fertilizerData);
-  const recommendations = fertilizerData[selectedCrop] || [];
+
+  const fertilizers = fertilizerData[selectedCrop];
+  const diseases = diseaseFertilizerData[selectedCrop];
 
   return (
-    <div style={{ padding: "30px" }}>
-      <h2>🌱 Fertilizer Recommendation</h2>
+    <div className="fertilizer-page">
+      <h2>🌱 Fertilizer & Disease Recommendation</h2>
 
+      {/* CROP SELECT */}
       <select
         value={selectedCrop}
         onChange={e => setSelectedCrop(e.target.value)}
-        style={{
-          padding: "10px",
-          width: "300px",
-          marginBottom: "20px"
-        }}
+        className="crop-select"
       >
-        <option value="">Select Crop</option>
+        <option value="">🌾 Select Crop</option>
         {crops.map(crop => (
           <option key={crop} value={crop}>
             {crop}
@@ -29,44 +30,55 @@ function FertilizerPage() {
         ))}
       </select>
 
-      {recommendations.map((item, index) => (
-        <div
-          key={index}
-          style={{
-            padding: "12px",
-            marginBottom: "10px",
-            border: "1px solid #ddd",
-            borderRadius: "8px",
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center"
-          }}
-        >
-          <div>
-            <b>{item.stage}</b> – {item.fertilizer}
-            <br />
-            <small>{item.benefit}</small>
-          </div>
+      {/* 🌱 FERTILIZER SECTION */}
+      {fertilizers && (
+        <>
+          <h3>🌱 Fertilizer Plan</h3>
+          {fertilizers.map((f, i) => (
+            <div key={i} className="info-card">
+              <b>{f.stage} – {f.fertilizer}</b>
+              <p>{f.benefit}</p>
 
-          <button
-            onClick={() =>
-              speakFertilizer({
-                crop: selectedCrop,
-                stage: item.stage,
-                fertilizer: item.fertilizer
-              })
-            }
-            style={{
-              fontSize: "18px",
-              border: "none",
-              background: "transparent",
-              cursor: "pointer"
-            }}
-          >
-            🔊
-          </button>
-        </div>
-      ))}
+              🔊
+              <button
+                onClick={() =>
+                  speakText(
+                    `For ${selectedCrop}, apply ${f.fertilizer} at ${f.stage} stage`
+                  )
+                }
+              >
+                Speak
+              </button>
+            </div>
+          ))}
+        </>
+      )}
+
+      {/* 🦠 DISEASE SECTION */}
+      {diseases && (
+        <>
+          <h3>🦠 Common Diseases</h3>
+          {diseases.map((d, i) => (
+            <div key={i} className="info-card danger">
+              <b>{d.disease}</b>
+              <p><b>Symptoms:</b> {d.symptoms}</p>
+              <p><b>Prevention:</b> {d.prevention}</p>
+              <p><b>Recommended:</b> {d.fertilizer}</p>
+
+              🔊
+              <button
+                onClick={() =>
+                  speakText(
+                    `${selectedCrop} may get ${d.disease}. Use ${d.fertilizer}`
+                  )
+                }
+              >
+                Speak
+              </button>
+            </div>
+          ))}
+        </>
+      )}
     </div>
   );
 }

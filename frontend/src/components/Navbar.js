@@ -1,10 +1,23 @@
 import { Link, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import translations from "../utils/translations";
+import LanguageToggle from "./LanguageToggle";
 import "./Navbar.css";
 
 function Navbar() {
   const navigate = useNavigate();
 
-  // ✅ SAFE CHECK LOGIN STATUS
+  // 🌐 LANGUAGE
+  const [lang, setLang] = useState("en");
+
+  useEffect(() => {
+    const savedLang = localStorage.getItem("lang") || "en";
+    setLang(savedLang);
+  }, []);
+
+  const t = translations[lang];
+
+  // 👤 SAFE LOGIN CHECK
   let user = null;
   try {
     user = JSON.parse(localStorage.getItem("user"));
@@ -27,39 +40,45 @@ function Navbar() {
       {/* RIGHT */}
       <div className="navbar-right">
         <Link to="/" className="nav-link">
-          Dashboard
+          {t.dashboard}
         </Link>
 
         <Link to="/price-list" className="nav-link">
-          Price List
+          {t.priceList}
         </Link>
 
         <Link to="/comparison" className="nav-link">
-          Comparison
+          {t.comparison}
         </Link>
 
-        {/* 🌱 Fertilizer / Disease */}
         <Link to="/fertilizer" className="nav-link">
-          🌱 Fertilizer
+          🌱 {t.fertilizer}
         </Link>
+
+        {/* 🌐 LANGUAGE TOGGLE */}
+        <LanguageToggle />
 
         {/* LOGIN / ACCOUNT */}
         {!user ? (
           <Link to="/login" className="nav-link login-btn">
-            🔐 Login
+            🔐 {t.login}
           </Link>
         ) : (
           <>
             <Link to="/account" className="nav-link">
-              👤 My Account
+              👤 {t.account}
             </Link>
 
             <button
               onClick={handleLogout}
               className="nav-link logout-btn"
-              style={{ background: "none", border: "none" }}
+              style={{
+                background: "none",
+                border: "none",
+                cursor: "pointer"
+              }}
             >
-              🚪 Logout
+              🚪 {t.logout}
             </button>
           </>
         )}
