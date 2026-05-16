@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "dependencies": {
+    "@clerk/clerk-react": "^5.61.6",
     "chart.js": "^4.5.1",
     "leaflet": "^1.9.4",
     "react": "^18.2.0",

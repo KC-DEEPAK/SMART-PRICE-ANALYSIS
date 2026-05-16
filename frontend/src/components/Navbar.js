@@ -1,26 +1,13 @@
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import { useState } from "react";
 import LanguageToggle from "./LanguageToggle";
 import { useLanguage } from "../context/LanguageContext";
+import { UserButton } from "@clerk/clerk-react";
 import "./Navbar.css";
 
 function Navbar() {
-  const navigate = useNavigate();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { t } = useLanguage();
-
-  // 👤 SAFE LOGIN CHECK
-  let user = null;
-  try {
-    user = JSON.parse(localStorage.getItem("user"));
-  } catch (e) {
-    user = null;
-  }
-
-  const handleLogout = () => {
-    localStorage.removeItem("user");
-    navigate("/login");
-  };
 
   const toggleMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
@@ -72,28 +59,15 @@ function Navbar() {
         {/* 🌐 LANGUAGE TOGGLE */}
         <LanguageToggle />
 
-        {/* LOGIN / ACCOUNT */}
-        {!user ? (
-          <NavLink to="/login" className="nav-link login-btn" onClick={closeMenu}>
-            🔐 {t.login}
-          </NavLink>
-        ) : (
-          <>
-            <NavLink to="/account" className="nav-link account-btn" onClick={closeMenu}>
-              👤 {t.account}
-            </NavLink>
+        {/* ACCOUNT */}
+        <NavLink to="/account" className="nav-link account-btn" onClick={closeMenu}>
+          👤 {t.account}
+        </NavLink>
 
-            <button
-              onClick={() => {
-                handleLogout();
-                closeMenu();
-              }}
-              className="logout-btn"
-            >
-              🚪 {t.logout}
-            </button>
-          </>
-        )}
+        {/* CLERK USER BUTTON */}
+        <div style={{ marginLeft: '10px', display: 'flex', alignItems: 'center' }}>
+          <UserButton afterSignOutUrl="/" />
+        </div>
       </div>
     </nav>
   );

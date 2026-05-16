@@ -1,6 +1,12 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
 
+import {
+  SignedIn,
+  SignedOut,
+  RedirectToSignIn,
+} from "@clerk/clerk-react";
+
 import Navbar from "./components/Navbar";
 import Dashboard from "./pages/Dashboard";
 import ComparisonPage from "./pages/ComparisonPage";
@@ -17,21 +23,29 @@ function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
-        <Navbar />
 
-        <Routes>
-          <Route path="/" element={<Dashboard />} />
-          <Route path="/price-list" element={<PriceListPage />} />
-          <Route path="/comparison" element={<ComparisonPage />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/account" element={<AccountPage />} />
-          <Route path="/fertilizer" element={<FertilizerPage />} />
-          <Route path="/season-guide" element={<SeasonGuidePage />} />
-          <Route path="/disease-guide" element={<DiseaseFertilizerPage />} />
-          <Route path="/map" element={<MapPage />} />
-        </Routes>
-        
-        <Chatbot />
+        <SignedIn>
+          <Navbar />
+
+          <Routes>
+            <Route path="/" element={<Dashboard />} />
+            <Route path="/price-list" element={<PriceListPage />} />
+            <Route path="/comparison" element={<ComparisonPage />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/account" element={<AccountPage />} />
+            <Route path="/fertilizer" element={<FertilizerPage />} />
+            <Route path="/season-guide" element={<SeasonGuidePage />} />
+            <Route path="/disease-guide" element={<DiseaseFertilizerPage />} />
+            <Route path="/map" element={<MapPage />} />
+          </Routes>
+
+          <Chatbot />
+        </SignedIn>
+
+        <SignedOut>
+          <RedirectToSignIn />
+        </SignedOut>
+
       </BrowserRouter>
     </AuthProvider>
   );
