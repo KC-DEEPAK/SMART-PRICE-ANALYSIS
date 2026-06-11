@@ -4,6 +4,7 @@ import CategoryList from "../components/CategoryList";
 import TopBestCrops from "../components/TopBestCrops";
 import { speakBestMarket } from "../utils/speakPrice";
 import { useLanguage } from "../context/LanguageContext";
+import { API_URL } from "../utils/api";
 
 function Dashboard() {
   const [data, setData] = useState([]);
@@ -13,7 +14,7 @@ function Dashboard() {
 
   // 🔄 Load data
   useEffect(() => {
-    fetch("https://smart-price-analysis-1.onrender.com/api/data")
+    fetch(API_URL)
       .then(res => res.json())
       .then(json => {
         setData(json);

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { generateBotResponse } from "../utils/chatbotLogic";
 import { useLanguage } from "../context/LanguageContext";
 import "./Chatbot.css";
+import { API_URL } from "../utils/api";
 
 function Chatbot() {
   const [isOpen, setIsOpen] = useState(false);
@@ -16,7 +17,7 @@ function Chatbot() {
 
   useEffect(() => {
     // Fetch data for rule-based engine
-    fetch("https://smart-price-analysis-1.onrender.com/api/data")
+    fetch(API_URL)
       .then(res => res.json())
       .then(json => setCropPriceData(json))
       .catch(err => console.error("Failed to fetch price data for chatbot", err));

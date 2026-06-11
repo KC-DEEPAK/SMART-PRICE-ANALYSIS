@@ -3,6 +3,7 @@ import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import L from "leaflet";
 import { useLanguage } from "../context/LanguageContext";
 import "leaflet/dist/leaflet.css";
+import { API_URL } from "../utils/api";
 
 // Icons
 const redIcon = new L.Icon({
@@ -58,7 +59,7 @@ const MapPage = () => {
     // 2. Fetch data
     const fetchData = async () => {
       try {
-        const response = await fetch("https://smart-price-analysis-1.onrender.com/api/data");
+        const response = await fetch(API_URL);
         if (!response.ok) throw new Error("Failed to fetch data");
         const data = await response.json();
         

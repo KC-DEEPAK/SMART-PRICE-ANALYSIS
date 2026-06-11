@@ -3,6 +3,7 @@ import PriceListGraph from "../components/PriceListGraph";
 import { speakDecision } from "../utils/speakDecision";
 import { getCropSeason } from "../utils/cropSeasons";
 import { useLanguage } from "../context/LanguageContext";
+import { API_URL } from "../utils/api";
 
 function PriceListPage() {
   const [data, setData] = useState([]);
@@ -14,7 +15,7 @@ function PriceListPage() {
     JSON.parse(localStorage.getItem("user")) || {};
 
   useEffect(() => {
-    fetch("https://smart-price-analysis-1.onrender.com/api/data")
+    fetch(API_URL)
       .then(res => res.json())
       .then(json => setData(json));
   }, []);
